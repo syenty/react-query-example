@@ -13,19 +13,17 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (credentials: LoginRequest) => login(credentials),
     onSuccess: (data) => {
-      // 토큰 저장
-      localStorage.setItem('accessToken', data.accessToken)
-      if (data.refreshToken) {
-        localStorage.setItem('refreshToken', data.refreshToken)
+      // 세션 기반 인증 - 서버에서 쿠키로 세션 관리
+      // localStorage에 인증 상태만 저장 (선택사항)
+      if (data.success) {
+        localStorage.setItem('isAuthenticated', 'true')
+
+        // 사용자 정보를 다시 가져오기 위해 쿼리 무효화
+        queryClient.invalidateQueries({ queryKey: ['user'] })
+
+        // 대시보드로 이동
+        router.push('/dashboard')
       }
-      localStorage.setItem('isAuthenticated', 'true')
-      localStorage.setItem('userEmail', data.user.email)
-
-      // 사용자 정보 캐시 업데이트
-      queryClient.setQueryData(['user'], data.user)
-
-      // 대시보드로 이동
-      router.push('/dashboard')
     },
     onError: (error: any) => {
       console.error('Login failed:', error)
@@ -44,10 +42,7 @@ export const useLogout = () => {
     mutationFn: logout,
     onSuccess: () => {
       // 로컬 스토리지 정리
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
       localStorage.removeItem('isAuthenticated')
-      localStorage.removeItem('userEmail')
 
       // 쿼리 캐시 초기화
       queryClient.clear()
@@ -57,10 +52,7 @@ export const useLogout = () => {
     },
     onError: () => {
       // 에러가 발생해도 로그아웃 처리
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
       localStorage.removeItem('isAuthenticated')
-      localStorage.removeItem('userEmail')
       queryClient.clear()
       router.push('/login')
     },

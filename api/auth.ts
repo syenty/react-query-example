@@ -1,5 +1,5 @@
 import apiClient from '@/lib/api-client'
-import { LoginRequest, LoginResponse, RefreshTokenRequest, RefreshTokenResponse, User } from '@/types'
+import { LoginRequest, LoginResponse, User } from '@/types'
 
 /**
  * 로그인 API
@@ -16,13 +16,6 @@ export const logout = async (): Promise<void> => {
   await apiClient.post('/auth/logout')
 }
 
-/**
- * 토큰 갱신 API
- */
-export const refreshToken = async (request: RefreshTokenRequest): Promise<RefreshTokenResponse> => {
-  const response = await apiClient.post<RefreshTokenResponse>('/auth/refresh', request)
-  return response.data
-}
 
 /**
  * 현재 사용자 정보 조회 API

@@ -7,17 +7,12 @@ const apiClient: AxiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // 세션 쿠키를 자동으로 포함
 })
 
-// 요청 인터셉터: 토큰 자동 추가
+// 요청 인터셉터: 세션 기반 인증에서는 쿠키가 자동으로 포함되므로 토큰 추가 불필요
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('accessToken')
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`
-      }
-    }
     return config
   },
   (error: AxiosError) => {
@@ -29,32 +24,11 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
-
-    // 401 에러 (인증 실패) 처리
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true
-
-      // 토큰 갱신 로직 (필요한 경우)
-      // const refreshToken = localStorage.getItem('refreshToken')
-      // if (refreshToken) {
-      //   try {
-      //     const response = await axios.post('/auth/refresh', { refreshToken })
-      //     localStorage.setItem('accessToken', response.data.accessToken)
-      //     return apiClient(originalRequest)
-      //   } catch (refreshError) {
-      //     // 리프레시 실패 시 로그아웃
-      //     localStorage.removeItem('accessToken')
-      //     localStorage.removeItem('refreshToken')
-      //     window.location.href = '/login'
-      //     return Promise.reject(refreshError)
-      //   }
-      // }
-
-      // 토큰이 없거나 리프레시 토큰이 없는 경우 로그인 페이지로
+    // 401 에러 (인증 실패) 처리 - 세션 만료
+    if (error.response?.status === 401) {
+      // 세션이 만료되었으므로 로그인 페이지로 리다이렉트
       if (typeof window !== 'undefined') {
         localStorage.removeItem('isAuthenticated')
-        localStorage.removeItem('accessToken')
         window.location.href = '/login'
       }
     }

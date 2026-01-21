@@ -1,38 +1,19 @@
-import apiClient from '@/lib/api-client'
-import { DashboardResponse, DashboardStats, RecentActivity } from '@/types'
+import apiClient from "@/lib/api-client";
+import { DashboardResponse, DashboardQueryParams, GADashboardData } from "@/types";
 
 /**
- * 대시보드 전체 데이터 조회 API
+ * GA 대시보드 데이터 조회 API
+ * @param params - 시작일과 종료일을 포함한 쿼리 파라미터
+ * @returns GA 대시보드 데이터
  */
-export const getDashboardData = async (): Promise<DashboardResponse> => {
-  const response = await apiClient.get<DashboardResponse>('/dashboard')
-  return response.data
-}
-
-/**
- * 대시보드 통계 조회 API
- */
-export const getDashboardStats = async (): Promise<DashboardStats> => {
-  const response = await apiClient.get<DashboardStats>('/dashboard/stats')
-  return response.data
-}
-
-/**
- * 최근 활동 조회 API
- */
-export const getRecentActivities = async (limit?: number): Promise<RecentActivity[]> => {
-  const response = await apiClient.get<RecentActivity[]>('/dashboard/activities', {
-    params: { limit: limit || 10 },
-  })
-  return response.data
-}
-
-/**
- * 차트 데이터 조회 API
- */
-export const getChartData = async (period: 'week' | 'month' | 'year' = 'week') => {
-  const response = await apiClient.get('/dashboard/chart', {
-    params: { period },
-  })
-  return response.data
-}
+export const getGADashboardData = async (
+  params: DashboardQueryParams,
+): Promise<GADashboardData> => {
+  const response = await apiClient.get<DashboardResponse>("/v1/contributors/dashboard/ga", {
+    params: {
+      startDate: params.startDate,
+      endDate: params.endDate,
+    },
+  });
+  return response.data.data;
+};

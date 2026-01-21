@@ -1,9 +1,10 @@
 // 공통 API 응답 타입
 export interface ApiResponse<T = any> {
   success: boolean
-  data: T
-  message?: string
-  error?: ApiError
+  data: T | null
+  message: string
+  code: string
+  timestamp: string
 }
 
 // API 에러 타입

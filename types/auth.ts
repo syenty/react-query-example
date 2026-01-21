@@ -4,11 +4,13 @@ export interface LoginRequest {
   password: string;
 }
 
-// 로그인 응답 타입
+// 로그인 응답 타입 (세션 기반 - 토큰 없음)
 export interface LoginResponse {
-  accessToken: string;
-  refreshToken?: string;
-  user: User;
+  success: boolean;
+  data: null;
+  message: string;
+  code: string;
+  timestamp: string;
 }
 
 // 사용자 타입
@@ -21,13 +23,3 @@ export interface User {
   updatedAt?: string;
 }
 
-// 토큰 갱신 요청 타입
-export interface RefreshTokenRequest {
-  refreshToken: string;
-}
-
-// 토큰 갱신 응답 타입
-export interface RefreshTokenResponse {
-  accessToken: string;
-  refreshToken?: string;
-}

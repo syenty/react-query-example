@@ -1,33 +1,61 @@
-// 대시보드 통계 타입
-export interface DashboardStats {
+// GA 트래픽 소스별 데이터 타입
+export interface GATrafficSourceData {
+  source: string
+  medium: string
+  views: number
+  sessions: number
+  users: number
+}
+
+// GA 트래픽 소스별 활성 사용자 데이터 타입
+export interface GATrafficSourceActiveUserData {
+  source: string
+  medium: string
+  activeUsers: number
+  newUsers: number
+  sessions: number
+}
+
+// 페이지 뷰 통계 타입
+export interface PageViewStats {
+  totalViews: number
+  totalSessions: number
   totalUsers: number
-  todayVisitors: number
-  totalContent: number
-  activeSessions: number
-  userChange?: string
-  visitorChange?: string
-  contentChange?: string
-  sessionChange?: string
+  data: GATrafficSourceData[]
 }
 
-// 최근 활동 타입
-export interface RecentActivity {
-  id: number | string
-  action: string
-  user: string
-  timestamp: string
-  metadata?: Record<string, any>
+// 활성 사용자 통계 타입
+export interface ActiveUserStats {
+  totalActiveUsers: number
+  totalNewUsers: number
+  totalSessions: number
+  data: GATrafficSourceActiveUserData[]
 }
 
-// 대시보드 데이터 응답 타입
+// GA 대시보드 데이터 타입
+export interface GADashboardData {
+  mainPageView: PageViewStats
+  formPageView: PageViewStats
+  mainPageActiveUser: ActiveUserStats
+  formPageActiveUser: ActiveUserStats
+  mainPageEngagementSeconds: number
+  formPageEngagementSeconds: number
+  quitRate: number
+  videoClickCount: number
+  formClickCount: number
+}
+
+// 대시보드 API 응답 타입
 export interface DashboardResponse {
-  stats: DashboardStats
-  recentActivities: RecentActivity[]
-  chartData?: ChartData
+  success: boolean
+  data: GADashboardData
+  message: string
+  code: string
+  timestamp: string
 }
 
-// 차트 데이터 타입
-export interface ChartData {
-  labels: string[]
-  values: number[]
+// 대시보드 조회 요청 파라미터 타입
+export interface DashboardQueryParams {
+  startDate: string  // YYYY-MM-DD 형식
+  endDate: string    // YYYY-MM-DD 형식
 }
